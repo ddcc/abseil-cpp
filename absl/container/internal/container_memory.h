@@ -352,6 +352,9 @@ struct map_slot_policy {
     return slot->value;
   }
 
+  static K& key(slot_type* slot) {
+    return kMutableKeys::value ? slot->key : slot->mutable_value.first;
+  }
   static const K& key(const slot_type* slot) {
     return kMutableKeys::value ? slot->key : slot->value.first;
   }

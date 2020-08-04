@@ -291,7 +291,7 @@ struct map_params : common_params<Key, Compare, Alloc, TargetNodeSize, Multi,
     return value.first;
   }
   static const Key &key(const slot_type *s) { return slot_policy::key(s); }
-  static const Key &key(slot_type *s) { return slot_policy::key(s); }
+  static Key &key(slot_type *s) { return slot_policy::key(s); }
   static mapped_type &value(value_type *value) { return value->second; }
 };
 
@@ -348,7 +348,7 @@ struct set_params : common_params<Key, Compare, Alloc, TargetNodeSize, Multi,
   template <typename V>
   static const V &key(const V &value) { return value; }
   static const Key &key(const slot_type *slot) { return *slot; }
-  static const Key &key(slot_type *slot) { return *slot; }
+  static Key &key(slot_type *slot) { return *slot; }
 };
 
 // An adapter class that converts a lower-bound compare into an upper-bound
@@ -603,6 +603,7 @@ class btree_node {
   }
 
   // Getters for the key/value at position i in the node.
+  key_type &key(int i) { return params_type::key(slot(i)); }
   const key_type &key(int i) const { return params_type::key(slot(i)); }
   reference value(int i) { return params_type::element(slot(i)); }
   const_reference value(int i) const { return params_type::element(slot(i)); }
@@ -1005,6 +1006,7 @@ struct btree_iterator {
   template <typename TreeType, typename CheckerType>
   friend class base_checker;
 
+  key_type &key() { return node->key(position); }
   const key_type &key() const { return node->key(position); }
   slot_type *slot() { return node->slot(position); }
 
